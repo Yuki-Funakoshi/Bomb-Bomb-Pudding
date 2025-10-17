@@ -3,6 +3,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import {
   GameStatus,
   GameState,
+  Rules,
   Coords,
   CellType,
   ItemType,
@@ -67,6 +68,7 @@ const App: React.FC = () => {
     return {
         ...parseInitialMap(),
         playerStats: { firePower: 1, maxBombs: 1 },
+        rules: { bombTimer: BOMB_TIMER },
         gameStatus: GameStatus.StartScreen,
         turn: 0,
         isGoalVisible: false,
@@ -101,7 +103,7 @@ const App: React.FC = () => {
       case 'place':
         if (newState.bombs.filter(b => b.x === newState.player.x && b.y === newState.player.y).length === 0) {
             if (newState.bombs.length < newState.playerStats.maxBombs) {
-                newState.bombs.push({ ...newState.player, timer: BOMB_TIMER });
+                newState.bombs.push({ ...newState.player, timer: newState.rules.bombTimer });
             } else {
                 newMessages.push("You can't place any more bombs!");
             }
@@ -246,6 +248,7 @@ const App: React.FC = () => {
        setGameState({
             ...parseInitialMap(),
             playerStats: { firePower: 1, maxBombs: 1 },
+            rules: { bombTimer: BOMB_TIMER },
             gameStatus: GameStatus.Playing,
             turn: 0,
             isGoalVisible: false,
@@ -253,6 +256,20 @@ const App: React.FC = () => {
        });
        setMessage("Game restarted! Your move.");
     }
+  };
+
+  const setBombTimer = (nextTimer: number) => {
+    setGameState(prev => ({ ...prev, rules: { ...prev.rules, bombTimer: Math.max(1, Math.min(9, Math.floor(nextTimer))) } }));
+  };
+
+  const adjustStat = (key: 'firePower' | 'maxBombs', delta: number) => {
+    setGameState(prev => ({
+      ...prev,
+      playerStats: {
+        ...prev.playerStats,
+        [key]: Math.max(1, Math.min(9, prev.playerStats[key] + delta))
+      }
+    }));
   };
 
   return (
@@ -267,7 +284,14 @@ const App: React.FC = () => {
             <div className="w-full md:w-64 flex flex-col gap-4">
                 <PlayerStats stats={gameState.playerStats} turn={gameState.turn} />
                 <MessageLog message={message} />
-                <Controls onAction={handleAction} gameStatus={gameState.gameStatus} />
+                <Controls
+                  onAction={handleAction}
+                  gameStatus={gameState.gameStatus}
+                  rules={gameState.rules}
+                  playerStats={gameState.playerStats}
+                  onSetBombTimer={setBombTimer}
+                  onAdjustStat={adjustStat}
+                />
             </div>
         </div>
       </div>

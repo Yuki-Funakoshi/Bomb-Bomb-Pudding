@@ -40,6 +40,10 @@ export type PlayerStats = {
   maxBombs: number;
 };
 
+export type Rules = {
+  bombTimer: number;
+};
+
 export type GameMap = string[][];
 
 export type GameState = {
@@ -52,6 +56,7 @@ export type GameState = {
   goal: Coords;
   isGoalVisible: boolean;
   playerStats: PlayerStats;
+  rules: Rules;
   gameStatus: GameStatus;
   turn: number;
 };
