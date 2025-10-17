@@ -1,0 +1,5 @@
+
+{
+  "name": "React Bomberman",
+  "description": "A classic grid-based Bomberman game built with React and TypeScript. Players navigate a maze, place bombs to clear blocks and defeat enemies, collect power-ups, and find the hidden exit to win."
+}
